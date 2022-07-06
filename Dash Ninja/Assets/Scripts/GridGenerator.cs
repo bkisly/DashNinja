@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridGenerator : MonoBehaviour
+public class GridGenerator : Singleton<GridGenerator>
 {
     #region Adjustable fields
 
@@ -26,6 +26,9 @@ public class GridGenerator : MonoBehaviour
     private float spawnDelay = 0.025f;
 
     #endregion
+
+    public delegate void GridGeneratedEventHandler(Vector3 startPosition);
+    public event GridGeneratedEventHandler GridGenerated;
 
     private readonly System.Random _random = new();
     private readonly Dictionary<Vector2Int, GameObject> _coordinatesToFields = new();
@@ -70,6 +73,7 @@ public class GridGenerator : MonoBehaviour
             }
         }
 
+        OnGridGenerated(GridCoordinatesToWorld(startCoordinates));
         StartCoroutine(InstantiateFields());
     }
 
@@ -147,11 +151,11 @@ public class GridGenerator : MonoBehaviour
                                 orderby coordinate.y, coordinate.x
                                 select coordinate;
 
-        foreach (Vector2Int coordinate in sortedCoordinates)
+        foreach (Vector2Int coordinates in sortedCoordinates)
         {
             Instantiate(
-                _coordinatesToFields[coordinate], 
-                new Vector3(coordinate.x, 0, coordinate.y), 
+                _coordinatesToFields[coordinates], 
+                GridCoordinatesToWorld(coordinates), 
                 new Quaternion(), 
                 GameObject.FindGameObjectsWithTag("GridHolder").FirstOrDefault().transform
             );
@@ -159,4 +163,12 @@ public class GridGenerator : MonoBehaviour
             yield return new WaitForSeconds(spawnDelay);
         }
     }
+
+    private void OnGridGenerated(Vector3 startPosition)
+    {
+        Debug.Log("Grid generated successfully.");
+        GridGenerated?.Invoke(startPosition);
+    }
+
+    private static Vector3 GridCoordinatesToWorld(Vector2Int coordinates) => new(coordinates.x, 0, coordinates.y);
 }

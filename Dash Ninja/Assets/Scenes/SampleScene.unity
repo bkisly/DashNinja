@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 391060692}
   - component: {fileID: 391060691}
+  - component: {fileID: 391060693}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -156,7 +157,7 @@ MonoBehaviour:
   startField: {fileID: 2695642988273569167, guid: 3321b1a26075ec24eb4ae53c8210c55e, type: 3}
   finishField: {fileID: 3301563321123285650, guid: c317ec93fda4d8149a82a12d499d8798, type: 3}
   dangerousField: {fileID: 5725405535035515964, guid: b32a4d1d4bef10f4fba6a6f8234b6246, type: 3}
-  gridSize: 14
+  gridSize: 8
   spawnDelay: 0.025
 --- !u!4 &391060692
 Transform:
@@ -173,6 +174,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &391060693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391060690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cb1356889da7e14e80cc5f95fc8962d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5287760656334921842, guid: 87585b6bbe451b24eaf5f433f96b3719, type: 3}
+  currentLevelId: 1
+  playerSpawnOffset: 1
+  playerSpawnDelay: 0.5
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
