@@ -8,6 +8,7 @@ TagManager:
   - StartField
   - FinishField
   - DangerousField
+  - GridHolder
   layers:
   - Default
   - TransparentFX

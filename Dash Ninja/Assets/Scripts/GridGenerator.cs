@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
+    #region Adjustable fields
+
     [Header("Fields prefabs")]
 
     [SerializeField] private GameObject normalField;
@@ -18,6 +20,12 @@ public class GridGenerator : MonoBehaviour
     [SerializeField]
     [Range(2, 20)]
     private int gridSize = 8;
+
+    [SerializeField]
+    [Range(0, .5f)]
+    private float spawnDelay = 0.025f;
+
+    #endregion
 
     private readonly System.Random _random = new();
     private readonly Dictionary<Vector2Int, GameObject> _coordinatesToFields = new();
@@ -38,21 +46,31 @@ public class GridGenerator : MonoBehaviour
         Vector2Int startCoordinates = new(_random.Next(gridSize), 0);
         Vector2Int finishCoordinates = new(_random.Next(gridSize), gridSize - 1);
 
-        Debug.Log($"Start: {startCoordinates}, end: {finishCoordinates}");
-
         _coordinatesToFields.Add(startCoordinates, startField);
         _coordinatesToFields.Add(finishCoordinates, finishField);
 
         // 2. Find random route from start to end
 
-        var route = FindRandomRoute(startCoordinates, finishCoordinates);
-        foreach (Vector2Int coordinate in route)
-        {
-            Debug.Log(coordinate.ToString());
+        foreach (Vector2Int coordinate in FindRandomRoute(startCoordinates, finishCoordinates))
             _coordinatesToFields.Add(coordinate, normalField);
+
+        // 3. Find dangerous fields coordinates
+
+        foreach (Vector2Int coordinate in GetDangerousFieldsCoordinates((int)UnityEngine.Random.Range(.35f * Mathf.Pow(gridSize, 2), .45f * Mathf.Pow(gridSize, 2))))
+            _coordinatesToFields.Add(coordinate, dangerousField);
+
+        // 4. Add normal fields in order to fill empty spaces
+
+        for(int x = 0; x < gridSize; x++)
+        {
+            for(int y = 0; y < gridSize; y++)
+            {
+                if(!_coordinatesToFields.ContainsKey(new Vector2Int(x, y)))
+                    _coordinatesToFields.Add(new Vector2Int(x, y), normalField);
+            }
         }
 
-        Debug.Log($"Route length: {route.Count()}");
+        StartCoroutine(InstantiateFields());
     }
 
     /// <summary>
@@ -97,12 +115,48 @@ public class GridGenerator : MonoBehaviour
         if (result.Count >= gridSize * gridSize / 2) return FindRandomRoute(start, end);
         else return result;
     }
-}
 
-enum FieldsTypes
-{
-    Normal,
-    Start,
-    Finish,
-    Dangerous
+    /// <summary>
+    /// Generates the collection of random coordinates for dangerous fields.
+    /// </summary>
+    /// <param name="amount">Amount of dangerous fields</param>
+    /// <returns>IEnumerable of random dangerous fields coordinates.</returns>
+    private IEnumerable<Vector2Int> GetDangerousFieldsCoordinates(int amount)
+    {
+        for(int i = 0; i < amount; i++)
+        {
+            Vector2Int coordinates = new();
+
+            do
+            {
+                coordinates.x = _random.Next(gridSize);
+                coordinates.y = _random.Next(gridSize);
+            }
+            while (_coordinatesToFields.ContainsKey(coordinates));
+
+            yield return coordinates;
+        }
+    }
+
+    /// <summary>
+    /// Spawns the fields objects on the proper positions.
+    /// </summary>
+    private IEnumerator InstantiateFields()
+    {
+        var sortedCoordinates = from Vector2Int coordinate in _coordinatesToFields.Keys
+                                orderby coordinate.y, coordinate.x
+                                select coordinate;
+
+        foreach (Vector2Int coordinate in sortedCoordinates)
+        {
+            Instantiate(
+                _coordinatesToFields[coordinate], 
+                new Vector3(coordinate.x, 0, coordinate.y), 
+                new Quaternion(), 
+                GameObject.FindGameObjectsWithTag("GridHolder").FirstOrDefault().transform
+            );
+
+            yield return new WaitForSeconds(spawnDelay);
+        }
+    }
 }
