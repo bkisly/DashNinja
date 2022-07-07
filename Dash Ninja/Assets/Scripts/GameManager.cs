@@ -6,8 +6,7 @@ public class GameManager : Singleton<GameManager>
 {
     #region Adjustable fields
 
-    [SerializeField] private GameObject player;
-    [SerializeField] private uint currentLevelId = 1;
+    [SerializeField] private GameObject playerPrefab;
     [SerializeField] private float playerSpawnOffset = 1f;
 
     [Range(0f, 5f)]
@@ -15,6 +14,13 @@ public class GameManager : Singleton<GameManager>
     private float playerSpawnDelay = .5f;
 
     #endregion
+
+    public GameObject Player { get; private set; }
+
+    public delegate void PlayerSpawnedEventHandler(GameObject player);
+    public PlayerSpawnedEventHandler PlayerSpawned;
+
+    private FieldDetector _fieldDetector;
 
     private void Awake()
     {
@@ -25,6 +31,18 @@ public class GameManager : Singleton<GameManager>
     {
         startPosition.y = playerSpawnOffset;
         yield return new WaitForSeconds(playerSpawnDelay);
-        Instantiate(player, startPosition, new());
+        Player = Instantiate(playerPrefab, startPosition, new());
+        OnPlayerSpawned(Player);
+    }
+
+    private void OnPlayerSpawned(GameObject player)
+    {
+        if (_fieldDetector == null)
+        {
+            _fieldDetector = player.GetComponentInChildren<FieldDetector>();
+            _fieldDetector.FieldChanged += fieldType => Debug.Log($"Stepping on {fieldType}");
+        }
+        
+        PlayerSpawned?.Invoke(player);
     }
 }

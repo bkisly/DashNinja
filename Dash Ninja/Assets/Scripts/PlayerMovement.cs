@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveTime = .1f;
+
+    public event EventHandler MovementFinished;
 
     private float _currentMoveTime = 0f;
     private Vector3 _newPosition = new();
@@ -27,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 _currentMoveTime = 0f;
                 _isMoving = false;
+                OnMovementFinished();
             }
         }
     }
@@ -54,4 +58,6 @@ public class PlayerMovement : MonoBehaviour
             _isMoving = true;
         }
     }
+
+    private void OnMovementFinished() => MovementFinished?.Invoke(this, new());
 }

@@ -8,8 +8,8 @@ public class SwipeManager : Singleton<SwipeManager>
     [SerializeField, Range(.01f, .5f)] private float minSwipeDistance = .02f;
     [SerializeField, Range(.5f, .95f)] private float swipeDirectionTolerance = .8f;
 
-    private float _touchStartTime, _touchEndTime;
-    private Vector2 _touchStartPos, _touchEndPos;
+    private float _touchStartTime, _touchEndTime = 0f;
+    private Vector2 _touchStartPos, _touchEndPos = new();
 
     public event InputMoveEventHandler Swiped;
 

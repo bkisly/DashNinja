@@ -188,8 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cb1356889da7e14e80cc5f95fc8962d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 5287760656334921842, guid: 87585b6bbe451b24eaf5f433f96b3719, type: 3}
-  currentLevelId: 1
+  playerPrefab: {fileID: 5287760656334921842, guid: 87585b6bbe451b24eaf5f433f96b3719, type: 3}
   playerSpawnOffset: 1
   playerSpawnDelay: 0.5
 --- !u!114 &391060694
@@ -218,6 +217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSwipeTime: 0.5
   minSwipeDistance: 0.02
+  swipeDirectionTolerance: 0.8
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
