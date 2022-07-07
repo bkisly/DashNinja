@@ -16,7 +16,7 @@ public class GameManager : Singleton<GameManager>
 
     #endregion
 
-    private void Start()
+    private void Awake()
     {
         GridGenerator.Instance.GridGenerated += startPosition => StartCoroutine(SpawnPlayer(startPosition));
     }

@@ -164,11 +164,6 @@ public class GridGenerator : Singleton<GridGenerator>
         }
     }
 
-    private void OnGridGenerated(Vector3 startPosition)
-    {
-        Debug.Log("Grid generated successfully.");
-        GridGenerated?.Invoke(startPosition);
-    }
-
+    private void OnGridGenerated(Vector3 startPosition) => GridGenerated?.Invoke(startPosition);
     private static Vector3 GridCoordinatesToWorld(Vector2Int coordinates) => new(coordinates.x, 0, coordinates.y);
 }
