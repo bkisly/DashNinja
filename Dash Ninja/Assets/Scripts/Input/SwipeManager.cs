@@ -6,9 +6,12 @@ public class SwipeManager : Singleton<SwipeManager>
 {
     [SerializeField, Range(.3f, 1.5f)] private float maxSwipeTime = .5f;
     [SerializeField, Range(.01f, .5f)] private float minSwipeDistance = .02f;
+    [SerializeField, Range(.5f, .95f)] private float swipeDirectionTolerance = .8f;
 
     private float _touchStartTime, _touchEndTime;
     private Vector2 _touchStartPos, _touchEndPos;
+
+    public event InputMoveEventHandler Swiped;
 
     private void Awake()
     {
@@ -26,14 +29,21 @@ public class SwipeManager : Singleton<SwipeManager>
     {
         _touchEndPos = position;
         _touchEndTime = time;
-        DetectTouch();
+        DetectSwipe();
     }
 
-    private void DetectTouch()
+    private void DetectSwipe()
     {
         if(Vector2.Distance(_touchStartPos, _touchEndPos) >= minSwipeDistance && _touchEndTime - _touchStartTime <= maxSwipeTime)
         {
-            Debug.Log("Swipe!");
+            Vector2 swipeDirection = (_touchEndPos - _touchStartPos).normalized;
+
+            if (Vector2.Dot(swipeDirection, Vector2.left) >= swipeDirectionTolerance) OnSwiped(Direction.Left);
+            else if (Vector2.Dot(swipeDirection, Vector2.up) >= swipeDirectionTolerance) OnSwiped(Direction.Up);
+            else if (Vector2.Dot(swipeDirection, Vector2.right) >= swipeDirectionTolerance) OnSwiped(Direction.Right);
+            else if (Vector2.Dot(swipeDirection, Vector2.down) >= swipeDirectionTolerance) OnSwiped(Direction.Down);
         }
     }
+
+    private void OnSwiped(Direction direction) => Swiped?.Invoke(direction);
 }

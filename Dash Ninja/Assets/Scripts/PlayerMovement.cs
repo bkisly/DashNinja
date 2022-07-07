@@ -12,7 +12,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        InputManager.Instance.KeyPressed += InputManager_KeyPressed;
+        InputManager.Instance.KeyPressed += InputMoveDetected;
+        SwipeManager.Instance.Swiped += InputMoveDetected;
     }
 
     private void Update()
@@ -30,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void InputManager_KeyPressed(Direction direction)
+    private void InputMoveDetected(Direction direction)
     {
         if (_currentMoveTime == 0f)
         {

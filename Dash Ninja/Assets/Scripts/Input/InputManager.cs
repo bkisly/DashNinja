@@ -11,13 +11,13 @@ public enum Direction
     Right,
 }
 
+public delegate void InputMoveEventHandler(Direction direction);
+
 [DefaultExecutionOrder(-1)]
 public class InputManager : Singleton<InputManager>
 {
     private PlayerControls _playerControls;
-
-    public delegate void KeyPressedEventHandler(Direction direction);
-    public event KeyPressedEventHandler KeyPressed;
+    public event InputMoveEventHandler KeyPressed;
 
     public delegate void TouchEventHandler(Vector2 position, float time);
     public event TouchEventHandler TouchStarted;
@@ -42,14 +42,12 @@ public class InputManager : Singleton<InputManager>
     private void PrimaryContact_started(InputAction.CallbackContext ctx)
     {
         Vector3 touchPos = ScreenCoordinatesToWorld(_playerControls.Touch.PrimaryPosition.ReadValue<Vector2>());
-        //Debug.Log($"Touch started pos: {(Vector2)touchPos}, time: {(float)ctx.time}");
         OnTouchStarted(touchPos, (float)ctx.time);
     }
 
     private void PrimaryContact_canceled(InputAction.CallbackContext ctx)
     {
         Vector3 touchPos = ScreenCoordinatesToWorld(_playerControls.Touch.PrimaryPosition.ReadValue<Vector2>());
-        //Debug.Log($"Touch ended pos: {(Vector2)touchPos}, time: {(float)ctx.time}");
         OnTouchEnded(touchPos, (float)ctx.time);
     }
 
