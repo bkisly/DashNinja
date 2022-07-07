@@ -32,11 +32,12 @@ public class GridGenerator : Singleton<GridGenerator>
 
     private readonly System.Random _random = new();
     private readonly Dictionary<Vector2Int, GameObject> _coordinatesToFields = new();
+    private float _minAmountOfDangerous = .25f;
+    private float _maxAmountOfDangerous = .3f;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        GenerateGrid();
+        GameManager.Instance.LevelLoaded += (_, _) => GenerateGrid();
     }
 
     /// <summary>
@@ -44,6 +45,9 @@ public class GridGenerator : Singleton<GridGenerator>
     /// </summary>
     private void GenerateGrid()
     {
+        UpdateGridSettings();
+        _coordinatesToFields.Clear();
+
         // 1. Find coordinates for start and end
 
         Vector2Int startCoordinates = new(_random.Next(gridSize), 0);
@@ -59,7 +63,11 @@ public class GridGenerator : Singleton<GridGenerator>
 
         // 3. Find dangerous fields coordinates
 
-        foreach (Vector2Int coordinate in GetDangerousFieldsCoordinates((int)UnityEngine.Random.Range(.35f * Mathf.Pow(gridSize, 2), .45f * Mathf.Pow(gridSize, 2))))
+        var dangerousCoordinates = GetDangerousFieldsCoordinates((int)UnityEngine.Random.Range(
+            _minAmountOfDangerous * Mathf.Pow(gridSize, 2),
+            _maxAmountOfDangerous * Mathf.Pow(gridSize, 2)));
+
+        foreach (Vector2Int coordinate in dangerousCoordinates)
             _coordinatesToFields.Add(coordinate, dangerousField);
 
         // 4. Add normal fields in order to fill empty spaces
@@ -147,6 +155,8 @@ public class GridGenerator : Singleton<GridGenerator>
     /// </summary>
     private IEnumerator InstantiateFields()
     {
+        yield return new WaitForSeconds(.01f);
+
         var sortedCoordinates = from Vector2Int coordinate in _coordinatesToFields.Keys
                                 orderby coordinate.y, coordinate.x
                                 select coordinate;
@@ -164,6 +174,20 @@ public class GridGenerator : Singleton<GridGenerator>
         }
     }
 
-    private void OnGridGenerated(Vector3 startPosition) => GridGenerated?.Invoke(startPosition);
+    private void UpdateGridSettings()
+    {
+        if(GameManager.Instance.CurrentLevelId % 5 == 0) gridSize += 2;
+
+        if(_maxAmountOfDangerous < .5f)
+        {
+            _minAmountOfDangerous += .02f;
+            _maxAmountOfDangerous += .02f;
+        }
+    }
+
+    private void OnGridGenerated(Vector3 startPosition)
+    {
+        GridGenerated?.Invoke(startPosition);
+    }
     private static Vector3 GridCoordinatesToWorld(Vector2Int coordinates) => new(coordinates.x, 0, coordinates.y);
 }

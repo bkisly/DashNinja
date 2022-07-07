@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -16,15 +18,17 @@ public class GameManager : Singleton<GameManager>
     #endregion
 
     public GameObject Player { get; private set; }
+    public uint CurrentLevelId { get; private set; }
 
     public delegate void PlayerSpawnedEventHandler(GameObject player);
-    public PlayerSpawnedEventHandler PlayerSpawned;
+    public event PlayerSpawnedEventHandler PlayerSpawned;
+    public event EventHandler LevelLoaded;
 
     private FieldDetector _fieldDetector;
 
-    private void Awake()
+    private void Start()
     {
-        GridGenerator.Instance.GridGenerated += startPosition => StartCoroutine(SpawnPlayer(startPosition));
+        InitializeGameplay();
     }
 
     private IEnumerator SpawnPlayer(Vector3 startPosition)
@@ -33,6 +37,22 @@ public class GameManager : Singleton<GameManager>
         yield return new WaitForSeconds(playerSpawnDelay);
         Player = Instantiate(playerPrefab, startPosition, new());
         OnPlayerSpawned(Player);
+    }
+
+    private void InitializeGameplay()
+    {
+        DontDestroyOnLoad(gameObject);
+        CurrentLevelId++;
+        GridGenerator.Instance.GridGenerated += position => StartCoroutine(SpawnPlayer(position));
+        SceneManager.LoadScene(1);
+        OnLevelLoaded();
+    }
+
+    public void NextLevel()
+    {
+        CurrentLevelId++;
+        SceneManager.LoadScene(1);
+        OnLevelLoaded();
     }
 
     private void OnPlayerSpawned(GameObject player)
@@ -45,4 +65,6 @@ public class GameManager : Singleton<GameManager>
         
         PlayerSpawned?.Invoke(player);
     }
+
+    private void OnLevelLoaded() => LevelLoaded?.Invoke(this, new());
 }

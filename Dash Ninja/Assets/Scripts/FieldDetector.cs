@@ -37,6 +37,7 @@ public class FieldDetector : MonoBehaviour
                 break;
             case "FinishField":
                 _currentFieldType = FieldType.Finish;
+                GameManager.Instance.NextLevel();
                 break;
             case "DangerousField":
                 _currentFieldType = FieldType.Dangerous;
