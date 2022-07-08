@@ -30,6 +30,8 @@ public class GridGenerator : Singleton<GridGenerator>
     public delegate void GridGeneratedEventHandler(Vector3 startPosition);
     public event GridGeneratedEventHandler GridGenerated;
 
+    public Vector3 StartPosition { get; private set; }
+
     private readonly System.Random _random = new();
     private readonly Dictionary<Vector2Int, GameObject> _coordinatesToFields = new();
     private float _minAmountOfDangerous = .25f;
@@ -81,7 +83,8 @@ public class GridGenerator : Singleton<GridGenerator>
             }
         }
 
-        OnGridGenerated(GridCoordinatesToWorld(startCoordinates));
+        StartPosition = GridCoordinatesToWorld(startCoordinates);
+        OnGridGenerated(StartPosition);
         StartCoroutine(InstantiateFields());
     }
 

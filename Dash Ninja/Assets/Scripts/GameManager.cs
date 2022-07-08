@@ -19,6 +19,7 @@ public class GameManager : Singleton<GameManager>
 
     public GameObject Player { get; private set; }
     public uint CurrentLevelId { get; private set; }
+    public float PlayerSpawnOffset { get { return playerSpawnOffset; } }
 
     public delegate void PlayerSpawnedEventHandler(GameObject player);
     public event PlayerSpawnedEventHandler PlayerSpawned;
