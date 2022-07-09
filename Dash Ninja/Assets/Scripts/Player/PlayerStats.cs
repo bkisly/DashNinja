@@ -27,11 +27,13 @@ public class PlayerStats : Singleton<PlayerStats>
     private bool _playerDead = false;
 
     [SerializeField] private float _timePoints;
-    public float TimePoints { get => _timePoints; }
+    public float TimePoints => _timePoints;
     public uint Lives { get; private set; }
+    public uint MaxLives => maxLives;
     public float Score { get; private set; }
 
     public event EventHandler PlayerDied;
+    public event StatsChangedEventHandler StatsChanged;
 
     private void Awake()
     {
@@ -44,6 +46,7 @@ public class PlayerStats : Singleton<PlayerStats>
     {
         _timePoints = maxTimePoints;
         Lives = maxLives;
+        OnStatsChanged(new() { MaxTimePoints = maxTimePoints, Lives = Lives, MaxLives = maxLives});
     }
 
     private void Update()
@@ -97,6 +100,8 @@ public class PlayerStats : Singleton<PlayerStats>
             _gameManager.Player.transform.position = playerSpawnPos;
         }
         else OnPlayerDied();
+
+        OnStatsChanged(new() { Lives = Lives });
     }
 
     private void FinishLevel()
@@ -104,12 +109,20 @@ public class PlayerStats : Singleton<PlayerStats>
         Score += _timePoints;
         _timePoints += pointsToAddWhenFinish;
         if(_timePoints > maxTimePoints) maxTimePoints = _timePoints;
+
+        OnStatsChanged(new() { Score = Score, MaxTimePoints = maxTimePoints });
     }
 
     private void OnPlayerDied()
     {
         _playerDead = true;
+        _timePoints = 0;
         Destroy(_gameManager.Player);
         PlayerDied?.Invoke(this, new());
+    }
+
+    private void OnStatsChanged(StatsChangedEventArgs e)
+    {
+        StatsChanged?.Invoke(e);
     }
 }
