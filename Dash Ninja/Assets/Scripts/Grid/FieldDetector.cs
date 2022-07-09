@@ -37,7 +37,6 @@ public class FieldDetector : MonoBehaviour
                 break;
             case "FinishField":
                 _currentFieldType = FieldType.Finish;
-                GameManager.Instance.NextLevel();
                 break;
             case "DangerousField":
                 _currentFieldType = FieldType.Dangerous;
@@ -50,5 +49,9 @@ public class FieldDetector : MonoBehaviour
         _currentFieldType = FieldType.None;
     }
 
-    private void OnFieldChanged(FieldType fieldType) => FieldChanged?.Invoke(fieldType);
+    private void OnFieldChanged(FieldType fieldType)
+    {
+        // Debug.Log($"Stepping on {fieldType}");
+        FieldChanged?.Invoke(fieldType);
+    }
 }

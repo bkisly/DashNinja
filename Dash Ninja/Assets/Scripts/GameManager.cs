@@ -49,7 +49,7 @@ public class GameManager : Singleton<GameManager>
         OnLevelLoaded();
     }
 
-    public void NextLevel()
+    private void NextLevel()
     {
         CurrentLevelId++;
         SceneManager.LoadScene(1);
@@ -61,10 +61,19 @@ public class GameManager : Singleton<GameManager>
         if (_fieldDetector == null)
         {
             _fieldDetector = player.GetComponentInChildren<FieldDetector>();
-            _fieldDetector.FieldChanged += fieldType => Debug.Log($"Stepping on {fieldType}");
+            _fieldDetector.FieldChanged += FieldDetector_FieldChanged;
         }
         
         PlayerSpawned?.Invoke(player);
+    }
+
+    private void FieldDetector_FieldChanged(FieldType fieldType)
+    {
+        if(fieldType == FieldType.Finish)
+        {
+            Debug.Log("Level complete.");
+            NextLevel();
+        }
     }
 
     private void OnLevelLoaded() => LevelLoaded?.Invoke(this, new());

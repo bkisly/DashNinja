@@ -274,30 +274,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff2c8b5d302c213429b6e7241e3f9721, type: 3}
---- !u!1 &1445441506 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8226701345780570434, guid: ff2c8b5d302c213429b6e7241e3f9721, type: 3}
-  m_PrefabInstance: {fileID: 1087327551}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1445441512
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1445441506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2dca14e5280fa2b41a4b7cfee8d6bc8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxTimePoints: 30
-  timePointsPerSecond: 1
-  timePointsIncrement: 0.1
-  pointsToAddWhenFinish: 5
-  maxLives: 3
-  damage: 5
-  respawnDelay: 0.3
 --- !u!1 &1920357255
 GameObject:
   m_ObjectHideFlags: 0

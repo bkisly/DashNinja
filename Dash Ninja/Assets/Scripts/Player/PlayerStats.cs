@@ -12,7 +12,7 @@ public class PlayerStats : Singleton<PlayerStats>
     [SerializeField, Range(5f, 120f)] private float maxTimePoints = 30f;
     [SerializeField, Range(0f, 120f)] private float timePointsPerSecond = 1f;
     [SerializeField, Range(.01f, 1f)] private float timePointsIncrement = .1f;
-    [SerializeField] private float pointsToAddWhenFinish = 5f;
+    [SerializeField, Range(0f, 50f)] private float pointsToAddWhenFinish = 5f;
 
     [Header("Player settings")]
 
@@ -26,7 +26,8 @@ public class PlayerStats : Singleton<PlayerStats>
     private FieldDetector _fieldDetector;
     private bool _playerDead = false;
 
-    public float TimePoints { get; private set; }
+    [SerializeField] private float _timePoints;
+    public float TimePoints { get => _timePoints; }
     public uint Lives { get; private set; }
     public float Score { get; private set; }
 
@@ -41,7 +42,7 @@ public class PlayerStats : Singleton<PlayerStats>
 
     private void Start()
     {
-        TimePoints = maxTimePoints;
+        _timePoints = maxTimePoints;
         Lives = maxLives;
     }
 
@@ -49,8 +50,8 @@ public class PlayerStats : Singleton<PlayerStats>
     {
         if (!_playerDead)
         {
-            TimePoints -= timePointsPerSecond * Time.deltaTime;
-            if (TimePoints <= 0) OnPlayerDied();
+            _timePoints -= timePointsPerSecond * Time.deltaTime;
+            if (_timePoints <= 0) OnPlayerDied();
         }
     }
     private void GameManager_PlayerSpawned(GameObject player)
@@ -77,12 +78,12 @@ public class PlayerStats : Singleton<PlayerStats>
 
     private void DealDamage()
     {
-        if (damage >= TimePoints)
+        if (damage >= _timePoints)
         {
-            TimePoints = 0;
+            _timePoints = 0;
             OnPlayerDied();
         }
-        else TimePoints -= damage;
+        else _timePoints -= damage;
     }
 
     private IEnumerator RespawnPlayer()
@@ -100,9 +101,9 @@ public class PlayerStats : Singleton<PlayerStats>
 
     private void FinishLevel()
     {
-        Score += TimePoints;
-        TimePoints += pointsToAddWhenFinish;
-        if(TimePoints > maxTimePoints) maxTimePoints = TimePoints;
+        Score += _timePoints;
+        _timePoints += pointsToAddWhenFinish;
+        if(_timePoints > maxTimePoints) maxTimePoints = _timePoints;
     }
 
     private void OnPlayerDied()

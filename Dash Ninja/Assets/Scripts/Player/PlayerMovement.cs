@@ -35,6 +35,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        InputManager.Instance.KeyPressed -= InputMoveDetected;
+        SwipeManager.Instance.Swiped -= InputMoveDetected;
+    }
+
     private void InputMoveDetected(Direction direction)
     {
         if (_currentMoveTime == 0f)
