@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveTime = .1f;
+    [SerializeField] private FieldDetector fieldDetector;
 
     public event EventHandler MovementFinished;
 
@@ -43,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void InputMoveDetected(Direction direction)
     {
-        if (_currentMoveTime == 0f)
+        if (_currentMoveTime == 0f && fieldDetector.CurrentFieldType != FieldType.None)
         {
             switch (direction)
             {

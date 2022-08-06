@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveTime: 0.1
+  fieldDetector: {fileID: 1826990521455307380}
 --- !u!1 &6336830291468458496
 GameObject:
   m_ObjectHideFlags: 0

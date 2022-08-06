@@ -19,6 +19,7 @@ public class FieldDetector : MonoBehaviour
     public event FieldChangedEventHandler FieldChanged;
 
     private FieldType _currentFieldType = FieldType.None;
+    public FieldType CurrentFieldType => _currentFieldType;
 
     private void Start()
     {

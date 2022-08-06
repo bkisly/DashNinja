@@ -113,6 +113,17 @@ public class PlayerStats : Singleton<PlayerStats>
         OnStatsChanged(new() { Score = Score, MaxTimePoints = maxTimePoints });
     }
 
+    public void ResetStats()
+    {
+        Score = 0;
+        _timePoints = maxTimePoints = 30f;
+        timePointsPerSecond = 1f;
+        Lives = maxLives = 3;
+        _playerDead = false;
+
+        OnStatsChanged(new() { Score = Score, MaxLives = MaxLives, MaxTimePoints = maxTimePoints, Lives = Lives });
+    }
+
     private void OnPlayerDied()
     {
         _playerDead = true;

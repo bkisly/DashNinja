@@ -56,6 +56,13 @@ public class GameManager : Singleton<GameManager>
         OnLevelLoaded();
     }
 
+    public void Restart()
+    {
+        CurrentLevelId = 0;
+        PlayerStats.Instance.ResetStats();
+        NextLevel();
+    }
+
     private void OnPlayerSpawned(GameObject player)
     {
         if (_fieldDetector == null)
