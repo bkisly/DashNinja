@@ -42,6 +42,13 @@ public class GridGenerator : Singleton<GridGenerator>
         GameManager.Instance.LevelLoaded += (_, _) => GenerateGrid();
     }
 
+    public void ResetGrid()
+    {
+        gridSize = 8;
+        _minAmountOfDangerous = .25f;
+        _maxAmountOfDangerous = .3f;
+    }
+
     /// <summary>
     /// Generates a new level grid.
     /// </summary>

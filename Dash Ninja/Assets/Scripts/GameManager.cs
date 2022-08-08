@@ -60,6 +60,7 @@ public class GameManager : Singleton<GameManager>
     {
         CurrentLevelId = 0;
         PlayerStats.Instance.ResetStats();
+        GridGenerator.Instance.ResetGrid();
         NextLevel();
     }
 

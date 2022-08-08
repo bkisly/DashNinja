@@ -13,8 +13,7 @@ public class GameOverUiManager : MonoBehaviour
 
     private void PlayerStats_PlayerDied(object sender, System.EventArgs e)
     {
-        Debug.Log(finalScoreLabel is not null);
-        finalScoreLabel.text = $"Your score is: { PlayerStats.Instance.Score }";
+        finalScoreLabel.text = $"Your score is: {PlayerStats.Instance.Score:F3}";
         gameOverPanel.SetActive(true);
     }
 
