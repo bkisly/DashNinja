@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum FieldType
@@ -24,6 +22,14 @@ public class FieldDetector : MonoBehaviour
     private void Start()
     {
         playerMovement.MovementFinished += (_, _) => OnFieldChanged(_currentFieldType);
+        PlayerStats.Instance.InvulnerabilityChanged += PlayerStats_InvulnerabilityChanged;
+    }
+
+    private void PlayerStats_InvulnerabilityChanged(bool invulnerable)
+    {
+        bool isPlayerMoving = GameManager.Instance.Player.GetComponent<PlayerMovement>().IsMoving;
+        if (!invulnerable && !isPlayerMoving)
+            OnFieldChanged(_currentFieldType);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -52,7 +58,7 @@ public class FieldDetector : MonoBehaviour
 
     private void OnFieldChanged(FieldType fieldType)
     {
-        // Debug.Log($"Stepping on {fieldType}");
+        Debug.Log($"Stepping on {fieldType}");
         FieldChanged?.Invoke(fieldType);
     }
 }

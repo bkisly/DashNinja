@@ -17,12 +17,9 @@ public class GridGenerator : Singleton<GridGenerator>
 
     [Header("Grid properties")]
 
-    [SerializeField]
-    [Range(2, 20)]
+    [SerializeField, Range(2, 20), Tooltip("Base width and length of the grid.")]
     private int gridSize = 8;
-
-    [SerializeField]
-    [Range(0, .5f)]
+    [SerializeField, Range(0, .5f), Tooltip("Delay in seconds between spawning the following grid blocks.")]
     private float spawnDelay = 0.025f;
 
     #endregion
@@ -42,6 +39,9 @@ public class GridGenerator : Singleton<GridGenerator>
         GameManager.Instance.LevelLoaded += (_, _) => GenerateGrid();
     }
 
+    /// <summary>
+    /// Sets grid properties to its initial values.
+    /// </summary>
     public void ResetGrid()
     {
         gridSize = 8;
@@ -184,6 +184,9 @@ public class GridGenerator : Singleton<GridGenerator>
         }
     }
 
+    /// <summary>
+    /// Performs grid properties increment appropriate for finishing the level.
+    /// </summary>
     private void UpdateGridSettings()
     {
         if(GameManager.Instance.CurrentLevelId % 5 == 0) gridSize += 2;

@@ -9,22 +9,31 @@ public class PlayerStats : Singleton<PlayerStats>
 
     [Header("Time points")]
 
-    [SerializeField, Range(5f, 120f)] private float maxTimePoints = 30f;
-    [SerializeField, Range(0f, 120f)] private float timePointsPerSecond = 1f;
-    [SerializeField, Range(.01f, 1f)] private float timePointsIncrement = .1f;
-    [SerializeField, Range(0f, 50f)] private float pointsToAddWhenFinish = 5f;
+    [SerializeField, Range(5f, 120f), Tooltip("Base amount of time points with which the player starts the game.")] 
+    private float maxTimePoints = 30f;
+    [SerializeField, Range(0f, 120f), Tooltip("Determines how many time points are reduced by every second.")] 
+    private float timePointsPerSecond = 1f;
+    [SerializeField, Range(.01f, 1f), Tooltip("The value which timePointsPerSecond is increased by when the player finishes a level.")] 
+    private float timePointsIncrement = .1f;
+    [SerializeField, Range(0f, 50f), Tooltip("Amount of time points which are added when the player finishes a level.")] 
+    private float pointsToAddWhenFinish = 5f;
 
     [Header("Player settings")]
 
-    [SerializeField, Range(1, 20)] private uint maxLives = 3;
-    [SerializeField, Range(.1f, 50f)] private float damage = 5f;
-    [SerializeField, Range(0f, 1f)] private float respawnDelay = .3f;
+    [SerializeField, Range(1, 20), Tooltip("Base amount of lives with which the player starts the game.")] 
+    private uint maxLives = 3;
+    [SerializeField, Range(.1f, 50f), Tooltip("Amount of time points being reduced with every step on a dangerous field.")] 
+    private float damage = 5f;
+    [SerializeField, Range(0f, 1f), Tooltip("Time in seconds before the player gets respawned after falling off the grid.")] 
+    private float respawnDelay = .3f;
 
     #endregion
 
     private GameManager _gameManager;
     private FieldDetector _fieldDetector;
-    private bool _playerDead = false;
+    private bool _dead = false;
+    private bool _invulnerable = false;
+    [SerializeField] private float _invulnerabilityTime = 0f;
 
     [SerializeField] private float _timePoints;
     public float TimePoints => _timePoints;
@@ -32,6 +41,8 @@ public class PlayerStats : Singleton<PlayerStats>
     public uint MaxLives => maxLives;
     public float Score { get; private set; }
 
+    public delegate void InvulnerabilityChangedEventHandler(bool invulnerable);
+    public event InvulnerabilityChangedEventHandler InvulnerabilityChanged;
     public event EventHandler PlayerDied;
     public event StatsChangedEventHandler StatsChanged;
 
@@ -51,10 +62,20 @@ public class PlayerStats : Singleton<PlayerStats>
 
     private void Update()
     {
-        if (!_playerDead)
+        if (!_dead)
         {
             _timePoints -= timePointsPerSecond * Time.deltaTime;
             if (_timePoints <= 0) OnPlayerDied();
+        }
+
+        if(_invulnerable)
+        {
+            _invulnerabilityTime -= Time.deltaTime;
+            if (_invulnerabilityTime <= 0)
+            {
+                _invulnerable = false;
+                OnInvulnerabilityChanged(_invulnerable);
+            }
         }
     }
     private void GameManager_PlayerSpawned(GameObject player)
@@ -79,14 +100,40 @@ public class PlayerStats : Singleton<PlayerStats>
         }
     }
 
+    public void AddTimePoints(float amount)
+    {
+        maxTimePoints = Mathf.Max(maxTimePoints, _timePoints += amount);
+        OnStatsChanged(new() { MaxTimePoints = maxTimePoints });
+    }
+
+    public void SetInvulnerable(float time)
+    {
+        _invulnerabilityTime = Mathf.Min(_timePoints / timePointsPerSecond, time);
+        _invulnerable = true;
+        OnInvulnerabilityChanged(_invulnerable);
+    }
+
+    public void IncrementLives()
+    {
+        maxLives = (uint)Mathf.Max(maxLives, ++Lives);
+        OnStatsChanged(new() { Lives = Lives, MaxLives = maxLives });
+    }
+
     private void DealDamage()
     {
-        if (damage >= _timePoints)
+        if (!_invulnerable)
         {
-            _timePoints = 0;
-            OnPlayerDied();
+            if (damage >= _timePoints)
+            {
+                _timePoints = 0;
+                OnPlayerDied();
+            }
+            else
+            {
+                _timePoints -= damage;
+                SetInvulnerable(1f);
+            }
         }
-        else _timePoints -= damage;
     }
 
     private IEnumerator RespawnPlayer()
@@ -119,14 +166,14 @@ public class PlayerStats : Singleton<PlayerStats>
         _timePoints = maxTimePoints = 30f;
         timePointsPerSecond = 1f;
         Lives = maxLives = 3;
-        _playerDead = false;
+        _dead = false;
 
         OnStatsChanged(new() { Score = Score, MaxLives = MaxLives, MaxTimePoints = maxTimePoints, Lives = Lives });
     }
 
     private void OnPlayerDied()
     {
-        _playerDead = true;
+        _dead = true;
         _timePoints = 0;
         Destroy(_gameManager.Player);
         PlayerDied?.Invoke(this, new());
@@ -135,5 +182,10 @@ public class PlayerStats : Singleton<PlayerStats>
     private void OnStatsChanged(StatsChangedEventArgs e)
     {
         StatsChanged?.Invoke(e);
+    }
+
+    private void OnInvulnerabilityChanged(bool invulnerable)
+    {
+        InvulnerabilityChanged?.Invoke(invulnerable);
     }
 }
