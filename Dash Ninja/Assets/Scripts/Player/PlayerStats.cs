@@ -77,6 +77,12 @@ public class PlayerStats : Singleton<PlayerStats>
                 OnInvulnerabilityChanged(_invulnerable);
             }
         }
+        else
+        {
+            if(_gameManager.Player != null)
+                if (_fieldDetector.CurrentFieldType == FieldType.Dangerous && !_gameManager.Player.GetComponent<PlayerMovement>().IsMoving)
+                    DealDamage();
+        }
     }
     private void GameManager_PlayerSpawned(GameObject player)
     {

@@ -15,12 +15,19 @@ public class GridGenerator : Singleton<GridGenerator>
     [SerializeField] private GameObject finishField;
     [SerializeField] private GameObject dangerousField;
 
+    [Header("Items prefabs")]
+    [SerializeField] private GameObject goldItem;
+    [SerializeField] private GameObject vialItem;
+    [SerializeField] private GameObject fulgentPearlItem;
+
     [Header("Grid properties")]
 
     [SerializeField, Range(2, 20), Tooltip("Base width and length of the grid.")]
     private int gridSize = 8;
     [SerializeField, Range(0, .5f), Tooltip("Delay in seconds between spawning the following grid blocks.")]
     private float spawnDelay = 0.025f;
+    [SerializeField, Range(.5f, 3f)]
+    private float itemSpawnOffset = 1f;
 
     #endregion
 
@@ -31,8 +38,11 @@ public class GridGenerator : Singleton<GridGenerator>
 
     private readonly System.Random _random = new();
     private readonly Dictionary<Vector2Int, GameObject> _coordinatesToFields = new();
+    private readonly Dictionary<Vector2Int, GameObject> _coordinatesToItems = new();
+
     private float _minAmountOfDangerous = .25f;
     private float _maxAmountOfDangerous = .3f;
+    private const float _maxAmountOfItems = .05f;
 
     private void Awake()
     {
@@ -56,6 +66,7 @@ public class GridGenerator : Singleton<GridGenerator>
     {
         UpdateGridSettings();
         _coordinatesToFields.Clear();
+        _coordinatesToItems.Clear();
 
         // 1. Find coordinates for start and end
 
@@ -72,7 +83,7 @@ public class GridGenerator : Singleton<GridGenerator>
 
         // 3. Find dangerous fields coordinates
 
-        var dangerousCoordinates = GetDangerousFieldsCoordinates((int)UnityEngine.Random.Range(
+        var dangerousCoordinates = GetDangerousFieldsCoordinates((uint)UnityEngine.Random.Range(
             _minAmountOfDangerous * Mathf.Pow(gridSize, 2),
             _maxAmountOfDangerous * Mathf.Pow(gridSize, 2)));
 
@@ -89,6 +100,12 @@ public class GridGenerator : Singleton<GridGenerator>
                     _coordinatesToFields.Add(new Vector2Int(x, y), normalField);
             }
         }
+
+        // 5. Generate items positions
+
+        GenerateItemsPositions();
+
+        // 6. Instatiate the grid
 
         StartPosition = GridCoordinatesToWorld(startCoordinates);
         OnGridGenerated(StartPosition);
@@ -143,7 +160,7 @@ public class GridGenerator : Singleton<GridGenerator>
     /// </summary>
     /// <param name="amount">Amount of dangerous fields</param>
     /// <returns>IEnumerable of random dangerous fields coordinates.</returns>
-    private IEnumerable<Vector2Int> GetDangerousFieldsCoordinates(int amount)
+    private IEnumerable<Vector2Int> GetDangerousFieldsCoordinates(uint amount)
     {
         for(int i = 0; i < amount; i++)
         {
@@ -157,6 +174,44 @@ public class GridGenerator : Singleton<GridGenerator>
             while (_coordinatesToFields.ContainsKey(coordinates));
 
             yield return coordinates;
+        }
+    }
+
+    /// <summary>
+    /// Fills the local dictionary which maps grid coordinates to item objects to spawn
+    /// </summary>
+    private void GenerateItemsPositions()
+    {
+        int itemsAmount = _random.Next((int)(_maxAmountOfItems * Mathf.Pow(gridSize, 2)));
+        IList<Vector2Int> normalFieldsCoordinates = (from Vector2Int coord in _coordinatesToFields.Keys
+                                      where _coordinatesToFields[coord].CompareTag("NormalField")
+                                      select coord).ToList();
+
+        for (int i = 0; i < itemsAmount; i++)
+        {
+            // 1. Select item type to spawn
+
+            double itemSpawnChance = _random.NextDouble();
+            ItemType itemType = itemSpawnChance switch
+            {
+                (>= 0) and (< .8) => ItemType.Gold,
+                (>= .8) and (< .95) => ItemType.Vial,
+                _ => ItemType.FulgentPearl
+            };
+
+            // 2. Select item coordinates and remove them from the list
+
+            Vector2Int randomCoordinate = normalFieldsCoordinates[_random.Next(normalFieldsCoordinates.Count)];
+            normalFieldsCoordinates.Remove(randomCoordinate);
+
+            // 3. Add item to the dictionary
+
+            _coordinatesToItems.Add(randomCoordinate, itemType switch
+            {
+                ItemType.Gold => goldItem,
+                ItemType.Vial => vialItem,
+                _ => fulgentPearlItem
+            });
         }
     }
 
@@ -179,6 +234,17 @@ public class GridGenerator : Singleton<GridGenerator>
                 new Quaternion(), 
                 GameObject.FindGameObjectsWithTag("GridHolder").FirstOrDefault().transform
             );
+
+            if (_coordinatesToItems.ContainsKey(coordinates))
+            {
+                print("lol");
+                Instantiate(
+                    _coordinatesToItems[coordinates],
+                    GridCoordinatesToWorld(coordinates) + new Vector3(0, itemSpawnOffset),
+                    new Quaternion(),
+                    GameObject.FindGameObjectsWithTag("ItemsHolder").FirstOrDefault().transform
+                );
+            }
 
             yield return new WaitForSeconds(spawnDelay);
         }

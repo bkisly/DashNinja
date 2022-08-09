@@ -9,6 +9,7 @@ TagManager:
   - FinishField
   - DangerousField
   - GridHolder
+  - ItemsHolder
   layers:
   - Default
   - TransparentFX

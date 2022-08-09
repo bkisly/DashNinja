@@ -22,14 +22,6 @@ public class FieldDetector : MonoBehaviour
     private void Start()
     {
         playerMovement.MovementFinished += (_, _) => OnFieldChanged(_currentFieldType);
-        PlayerStats.Instance.InvulnerabilityChanged += PlayerStats_InvulnerabilityChanged;
-    }
-
-    private void PlayerStats_InvulnerabilityChanged(bool invulnerable)
-    {
-        bool isPlayerMoving = GameManager.Instance.Player.GetComponent<PlayerMovement>().IsMoving;
-        if (!invulnerable && !isPlayerMoving)
-            OnFieldChanged(_currentFieldType);
     }
 
     private void OnTriggerEnter(Collider other)

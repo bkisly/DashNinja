@@ -52,8 +52,12 @@ MonoBehaviour:
   startField: {fileID: 2695642988273569167, guid: 3321b1a26075ec24eb4ae53c8210c55e, type: 3}
   finishField: {fileID: 3301563321123285650, guid: c317ec93fda4d8149a82a12d499d8798, type: 3}
   dangerousField: {fileID: 5725405535035515964, guid: b32a4d1d4bef10f4fba6a6f8234b6246, type: 3}
+  goldItem: {fileID: 9003498626809738615, guid: 20fd86e67bc096c42bb6257133d63e27, type: 3}
+  vialItem: {fileID: 2339815484115914249, guid: d6c87a2908af01c42bae707261ae4fb7, type: 3}
+  fulgentPearlItem: {fileID: 5482971466386237055, guid: 16a128313b2d72f46a57f056d6336888, type: 3}
   gridSize: 8
   spawnDelay: 0.025
+  itemSpawnOffset: 1
 --- !u!114 &8226701345780570437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,3 +119,5 @@ MonoBehaviour:
   maxLives: 3
   damage: 5
   respawnDelay: 0.3
+  _invulnerabilityTime: 0
+  _timePoints: 0
