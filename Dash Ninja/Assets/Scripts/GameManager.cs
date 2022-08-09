@@ -45,14 +45,14 @@ public class GameManager : Singleton<GameManager>
         DontDestroyOnLoad(gameObject);
         CurrentLevelId++;
         GridGenerator.Instance.GridGenerated += position => StartCoroutine(SpawnPlayer(position));
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
         OnLevelLoaded();
     }
 
     private void NextLevel()
     {
         CurrentLevelId++;
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
         OnLevelLoaded();
     }
 

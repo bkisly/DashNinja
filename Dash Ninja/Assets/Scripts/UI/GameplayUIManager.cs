@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameplayUIManager : MonoBehaviour
+public class GameplayUiManager : MonoBehaviour
 {
     [SerializeField] private Slider timePointsBar;
     [SerializeField] private Text timePointsText, livesText, scoreText;

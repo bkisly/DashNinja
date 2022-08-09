@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameOverUiManager : MonoBehaviour
 {
@@ -22,9 +23,6 @@ public class GameOverUiManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         GameManager.Instance.Restart();
     }
-    
-    public void GoToMainMenu()
-    {
-        Debug.Log("Moving to main menu!");
-    }
+
+    public void GoToMainMenu() => SceneManager.LoadScene(0);
 }

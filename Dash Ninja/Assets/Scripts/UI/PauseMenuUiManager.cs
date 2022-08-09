@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PauseMenuUiManager : MonoBehaviour
 {
@@ -30,5 +31,5 @@ public class PauseMenuUiManager : MonoBehaviour
         GameManager.Instance.Restart();
     }
 
-    public void GoToMainMenu() => Debug.Log("Moving to main menu!");
+    public void GoToMainMenu() => SceneManager.LoadScene(0);
 }
